@@ -1,12 +1,9 @@
-from multiprocessing.managers import Value
-
-from bottle import response
 from tkinter import *
 import requests
 from tkinter import messagebox as mb
 from tkinter import filedialog as fd
 from tkinter import ttk
-
+import pyperclip
 
 def upload():
     try:
@@ -18,6 +15,8 @@ def upload():
                 response.raise_for_status()
                 download_link = response.json()['link']
                 entry.insert(0, download_link)
+                pyperclip.copy(download_link)
+                mb.showinfo('Успешно!','Ссылка успешно скопирована')
         else:
             raise ValueError('Не удалось отправить файл')
     except ValueError as v:
