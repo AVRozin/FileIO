@@ -1,17 +1,30 @@
+from multiprocessing.managers import Value
+
 from bottle import response
 from tkinter import *
 import requests
+from tkinter import messagebox as mb
 from tkinter import filedialog as fd
 from tkinter import ttk
 
+
 def upload():
-    filepath = fd.askopenfilename()
-    if filepath:
-        files = {'file': open(filepath, 'rb')}
-        response = requests.post('https://file.io', files= files)
-        if response.status_code == 200:
-            download_link = response.json()['link']
-            entry.insert(0, download_link)
+    try:
+        filepath = fd.askopenfilename()
+        if filepath:
+            with open(filepath, 'rb') as f:
+                files = {'file': f}
+                response = requests.post('https://file.io', files= files)
+                response.raise_for_status()
+                download_link = response.json()['link']
+                entry.insert(0, download_link)
+        else:
+            raise ValueError('Не удалось отправить файл')
+    except ValueError as v:
+        mb.showerror('Ошибка!', f'Произошла ошибка {v}')
+    except Exception as e:
+        mb.showerror('Ошибка!', f'Произошла ошибка {e}')
+
 
 w = Tk()
 w.title('Файл в облако')
